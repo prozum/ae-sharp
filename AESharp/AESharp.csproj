@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{107821FC-4FCF-4DAE-81CD-78C1E3656033}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AESharp</RootNamespace>
+    <AssemblyName>AESharp</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Class.cs" />
+    <Compile Include="Constant.cs" />
+    <Compile Include="Error.cs" />
+    <Compile Include="Expression.cs" />
+    <Compile Include="IInvertable.cs" />
+    <Compile Include="INegative.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Scope.cs" />
+    <Compile Include="Self.cs" />
+    <Compile Include="VarFunc.cs" />
+    <Compile Include="Variable.cs" />
+    <Compile Include="BinaryOperators\Add.cs" />
+    <Compile Include="BinaryOperators\And.cs" />
+    <Compile Include="BinaryOperators\Assign.cs" />
+    <Compile Include="BinaryOperators\BinaryOperator.cs" />
+    <Compile Include="BinaryOperators\BooleanEqual.cs" />
+    <Compile Include="BinaryOperators\Div.cs" />
+    <Compile Include="BinaryOperators\Dot.cs" />
+    <Compile Include="BinaryOperators\Equal.cs" />
+    <Compile Include="BinaryOperators\Exp.cs" />
+    <Compile Include="BinaryOperators\Greater.cs" />
+    <Compile Include="BinaryOperators\GreaterEqual.cs" />
+    <Compile Include="BinaryOperators\ISwappablecs.cs" />
+    <Compile Include="BinaryOperators\Lesser.cs" />
+    <Compile Include="BinaryOperators\LesserEqual.cs" />
+    <Compile Include="BinaryOperators\Mod.cs" />
+    <Compile Include="BinaryOperators\Mul.cs" />
+    <Compile Include="BinaryOperators\NotEqual.cs" />
+    <Compile Include="BinaryOperators\Or.cs" />
+    <Compile Include="BinaryOperators\Sub.cs" />
+    <Compile Include="Evaluator\CheckboxData.cs" />
+    <Compile Include="Evaluator\CircleData.cs" />
+    <Compile Include="Evaluator\DebugData.cs" />
+    <Compile Include="Evaluator\DotData.cs" />
+    <Compile Include="Evaluator\DrawData.cs" />
+    <Compile Include="Evaluator\ErrorData.cs" />
+    <Compile Include="Evaluator\EvalData.cs" />
+    <Compile Include="Evaluator\Evaluator.cs" />
+    <Compile Include="Evaluator\LineData.cs" />
+    <Compile Include="Evaluator\PlotData.cs" />
+    <Compile Include="Evaluator\PrintData.cs" />
+    <Compile Include="Evaluator\TextData.cs" />
+    <Compile Include="Evaluator\WidgetData.cs" />
+    <Compile Include="KeyExpressions\ForExpr.cs" />
+    <Compile Include="KeyExpressions\GlobalExpr.cs" />
+    <Compile Include="KeyExpressions\IfExpr.cs" />
+    <Compile Include="KeyExpressions\ImportExpr.cs" />
+    <Compile Include="KeyExpressions\RetExpr.cs" />
+    <Compile Include="KeyExpressions\WhileExpr.cs" />
+    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\Scanner.cs" />
+    <Compile Include="Parser\Token.cs" />
+    <Compile Include="SystemFunctions\AbsFunc.cs" />
+    <Compile Include="SystemFunctions\AcosFunc.cs" />
+    <Compile Include="SystemFunctions\AsinFunc.cs" />
+    <Compile Include="SystemFunctions\AtanFunc.cs" />
+    <Compile Include="SystemFunctions\CheckboxFunc.cs" />
+    <Compile Include="SystemFunctions\CloneFunc.cs" />
+    <Compile Include="SystemFunctions\CosFunc.cs" />
+    <Compile Include="SystemFunctions\DirFunc.cs" />
+    <Compile Include="SystemFunctions\EvalFunc.cs" />
+    <Compile Include="SystemFunctions\ExpandFunc.cs" />
+    <Compile Include="SystemFunctions\LineFunc.cs" />
+    <Compile Include="SystemFunctions\NRootFunc.cs" />
+    <Compile Include="SystemFunctions\ParaPlotFunc.cs" />
+    <Compile Include="SystemFunctions\PlotFunc.cs" />
+    <Compile Include="SystemFunctions\PrintFunc.cs" />
+    <Compile Include="SystemFunctions\RangeFunc.cs" />
+    <Compile Include="SystemFunctions\ReduceFunc.cs" />
+    <Compile Include="SystemFunctions\SinFunc.cs" />
+    <Compile Include="SystemFunctions\SolveFunc.cs" />
+    <Compile Include="SystemFunctions\SqrtFunc.cs" />
+    <Compile Include="SystemFunctions\SysFunc.cs" />
+    <Compile Include="SystemFunctions\TanFunc.cs" />
+    <Compile Include="SystemFunctions\TypeFunc.cs" />
+    <Compile Include="Types\Boolean.cs" />
+    <Compile Include="Types\Complex.cs" />
+    <Compile Include="Types\Integer.cs" />
+    <Compile Include="Types\Irrational.cs" />
+    <Compile Include="Types\List.cs" />
+    <Compile Include="Types\Null.cs" />
+    <Compile Include="Types\Number.cs" />
+    <Compile Include="Types\Rational.cs" />
+    <Compile Include="Types\Real.cs" />
+    <Compile Include="Types\Text.cs" />
+    <Compile Include="UnaryOperators\Call.cs" />
+    <Compile Include="UnaryOperators\ICallable.cs" />
+    <Compile Include="UnaryOperators\Minus.cs" />
+    <Compile Include="UnaryOperators\Negation.cs" />
+    <Compile Include="UnaryOperators\PostfixOperator.cs" />
+    <Compile Include="UnaryOperators\PrefixOperator.cs" />
+    <Compile Include="UnaryOperators\Referation.cs" />
+    <Compile Include="UnaryOperators\UnaryOperator.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

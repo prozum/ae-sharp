@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AESharp", "AESharp\AESharp.csproj", "{107821FC-4FCF-4DAE-81CD-78C1E3656033}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AESharp.Tests", "Tests\AESharp.Tests.csproj", "{3E0FBD2D-3E67-45BE-BCB0-B6B298718749}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{107821FC-4FCF-4DAE-81CD-78C1E3656033}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{107821FC-4FCF-4DAE-81CD-78C1E3656033}.Debug|x86.Build.0 = Debug|Any CPU
+		{107821FC-4FCF-4DAE-81CD-78C1E3656033}.Release|x86.ActiveCfg = Release|Any CPU
+		{107821FC-4FCF-4DAE-81CD-78C1E3656033}.Release|x86.Build.0 = Release|Any CPU
+		{3E0FBD2D-3E67-45BE-BCB0-B6B298718749}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3E0FBD2D-3E67-45BE-BCB0-B6B298718749}.Debug|x86.Build.0 = Debug|Any CPU
+		{3E0FBD2D-3E67-45BE-BCB0-B6B298718749}.Release|x86.ActiveCfg = Release|Any CPU
+		{3E0FBD2D-3E67-45BE-BCB0-B6B298718749}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
