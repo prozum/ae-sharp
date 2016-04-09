@@ -12,7 +12,9 @@ namespace AESharp
         Function,
         Scope,
         Equation,
-        List
+        List,
+        Integer,
+        Boolean
     }
 
     public abstract class SysFunc : Scope, ICallable
@@ -110,6 +112,14 @@ namespace AESharp
                         break;
                     case ArgumentType.List:
                         if (!(args[i].Evaluate() is List))
+                            valid = false;
+                        break;
+                    case ArgumentType.Integer:
+                        if (!(args[i].Evaluate() is Integer))
+                            valid = false;
+                        break;
+                    case ArgumentType.Boolean:
+                        if (!(args[i].Evaluate() is Boolean))
                             valid = false;
                         break;
                 }
