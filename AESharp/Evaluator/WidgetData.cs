@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AESharp
+﻿namespace AESharp
 {
     public abstract class WidgetData : EvalData
     {

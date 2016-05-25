@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AESharp
+﻿namespace AESharp
 {
     public class CheckboxData : WidgetData
     {
