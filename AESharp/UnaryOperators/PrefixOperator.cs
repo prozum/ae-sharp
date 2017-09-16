@@ -1,4 +1,4 @@
-﻿namespace AESharp
+﻿namespace AESharp.UnaryOperators
 {
     public abstract class PrefixOperator : UnaryOperator
     {
@@ -6,7 +6,7 @@
 
         protected PrefixOperator(string identifier)
         {
-            this.Identifier = identifier;
+            Identifier = identifier;
         }
             
         public override bool ContainsVariable(Variable other)

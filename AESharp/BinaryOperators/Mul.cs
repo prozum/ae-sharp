@@ -1,12 +1,16 @@
-﻿namespace AESharp
+﻿using AESharp.Values;
+
+namespace AESharp.BinaryOperators
 {
     public class Mul : BinaryOperator, ISwappable, IInvertable
     {
-        public override string Identifier { get { return "*"; } }
-        public override int Priority { get{ return 40; } }
+        public override string Identifier => "*";
+        public override int Priority => 40;
 
         public Mul() { }
         public Mul(Expression left, Expression right) : base(left, right) { }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {

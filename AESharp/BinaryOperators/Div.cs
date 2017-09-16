@@ -1,12 +1,16 @@
-﻿namespace AESharp
+﻿using AESharp.Values;
+
+namespace AESharp.BinaryOperators
 {
     public class Div : BinaryOperator, IInvertable
     {
-        public override string Identifier { get { return "/"; } }
-        public override int Priority { get{ return 40; } }
+        public override string Identifier => "/";
+        public override int Priority => 40;
 
         public Div() { }
         public Div(Expression left, Expression right) : base(left, right) { }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {
@@ -93,7 +97,7 @@
             Expression res;
 
             //When left exponent is lesser than right exponent. 2x^2/3x^4 -> 2/3x^2
-            if (((left.Exponent < right.Exponent) as Boolean).@bool)
+            if (((left.Exponent < right.Exponent) as Boolean).Bool)
             {
                 var symbol = right.Clone();
 
@@ -101,7 +105,7 @@
                 res = new Div(left.Prefix, symbol);
             }
             //When left exponent is greater than right exponent. 2x^4/3x^2 -> 2x^2/3
-            else if (((left.Exponent > right.Exponent) as Boolean).@bool)
+            else if (((left.Exponent > right.Exponent) as Boolean).Bool)
             {
                 var symbol = right.Clone();
 

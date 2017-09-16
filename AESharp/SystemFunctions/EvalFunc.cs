@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class EvalFunc : SysFunc
     {
@@ -26,9 +27,9 @@ namespace AESharp
             if (!(arg is Text))
                 return new Error("Argument must be Text");
 
-            var res = Evaluator.Eval(arg as Text);
+            var res = Evaluator.Evaluator.Eval(arg as Text);
 
-            res.Position.i += args[0].Position.i;
+            res.Position.I += args[0].Position.I;
             res.Position.Line += args[0].Position.Line - 1;
             res.Position.Column += args[0].Position.Column;
 

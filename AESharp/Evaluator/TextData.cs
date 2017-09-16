@@ -1,8 +1,8 @@
-﻿namespace AESharp
+﻿namespace AESharp.Evaluator
 {
     public class TextData : DrawData
     {
-        public string text;
+        public string Text;
     }
 }
 

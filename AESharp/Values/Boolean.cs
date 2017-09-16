@@ -1,13 +1,15 @@
-﻿namespace AESharp
+﻿namespace AESharp.Values
 {
     public class Boolean : Expression
     {
-        public bool @bool;
+        public bool Bool;
 
         public Boolean(bool value)
         {
-            this.@bool = value;
+            Bool = value;
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {
@@ -16,37 +18,37 @@
 
         public static bool operator true (Boolean b)
         {
-            return b.@bool;
+            return b.Bool;
         }
 
         public static bool operator false (Boolean b)
         {
-            return b.@bool;
+            return b.Bool;
         }
 
         public override string ToString()
         {
-            return @bool.ToString();
+            return Bool.ToString();
         }
 
         public override Expression Clone(Scope scope)
         {
-            return new Boolean(@bool);
+            return new Boolean(Bool);
         }
 
         public override Expression Negation()
         {
-            return new Boolean(!@bool);
+            return new Boolean(!Bool);
         }
 
         public override Expression AndWith(Boolean other)
         {
-            return new Boolean(this.@bool && other.@bool);
+            return new Boolean(Bool && other.Bool);
         }
 
         public override Expression OrWith(Boolean other)
         {
-            return new Boolean(this.@bool || other.@bool);
+            return new Boolean(Bool || other.Bool);
         }
     }
 }

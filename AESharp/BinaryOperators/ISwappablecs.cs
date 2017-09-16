@@ -1,4 +1,4 @@
-﻿namespace AESharp
+﻿namespace AESharp.BinaryOperators
 {
     // A BinaryOperator which sides can be swapped without effecting the result.
     public interface ISwappable

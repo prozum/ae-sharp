@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using AESharp.UnaryOperators;
+using AESharp.Values;
 
 namespace AESharp
 {
@@ -42,7 +44,7 @@ namespace AESharp
 
         public Error GetArgumentError(List args)
         {
-            return new Error(this, this.ToString() + " takes " + Arguments.Count.ToString() + " arguments. Not " + args.Count.ToString() + ".");
+            return new Error(this, ToString() + " takes " + Arguments.Count.ToString() + " arguments. Not " + args.Count.ToString() + ".");
         }
 
         public override Expression Evaluate()

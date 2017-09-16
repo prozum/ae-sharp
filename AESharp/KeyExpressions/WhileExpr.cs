@@ -1,23 +1,27 @@
-﻿namespace AESharp
+﻿using AESharp.Values;
+
+namespace AESharp.KeyExpressions
 {
     public class WhileExpr : Expression
     {
         public Expression Condition;
         public Scope WhileScope;
 
-        readonly int MaxIterations = 100000;
+        private readonly int _maxIterations = 100000;
 
         public WhileExpr(Scope scope)
         {
             CurScope = scope;
         }
 
+        public override bool Visit(IVisitor v) => v.Visit(this);
+
         public override Expression Evaluate()
         {
             int i = 0;
             var resList = new List();
 
-            while (i++ < MaxIterations)
+            while (i++ < _maxIterations)
             {
                 var res = Condition.ReduceEvaluate();
 
@@ -26,7 +30,7 @@
 
                 if (res is Boolean)
                 {
-                    if (!(res as Boolean).@bool)
+                    if (!(res as Boolean).Bool)
                         break;
                 }
 
@@ -38,7 +42,7 @@
                 resList.Items.Add(res);
             }
 
-            if (i > MaxIterations)
+            if (i > _maxIterations)
                 return new Error(this, "Overflow");
 
             return resList;

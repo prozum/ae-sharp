@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{107821FC-4FCF-4DAE-81CD-78C1E3656033}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>AESharp</RootNamespace>
     <AssemblyName>AESharp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
@@ -28,11 +28,15 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Class.cs" />
     <Compile Include="Constant.cs" />
@@ -109,16 +113,16 @@
     <Compile Include="SystemFunctions\SysFunc.cs" />
     <Compile Include="SystemFunctions\TanFunc.cs" />
     <Compile Include="SystemFunctions\TypeFunc.cs" />
-    <Compile Include="Types\Boolean.cs" />
-    <Compile Include="Types\Complex.cs" />
-    <Compile Include="Types\Integer.cs" />
-    <Compile Include="Types\Irrational.cs" />
-    <Compile Include="Types\List.cs" />
-    <Compile Include="Types\Null.cs" />
-    <Compile Include="Types\Number.cs" />
-    <Compile Include="Types\Rational.cs" />
-    <Compile Include="Types\Real.cs" />
-    <Compile Include="Types\Text.cs" />
+    <Compile Include="Values\Boolean.cs" />
+    <Compile Include="Values\Complex.cs" />
+    <Compile Include="Values\Integer.cs" />
+    <Compile Include="Values\Irrational.cs" />
+    <Compile Include="Values\List.cs" />
+    <Compile Include="Values\Null.cs" />
+    <Compile Include="Values\Number.cs" />
+    <Compile Include="Values\Rational.cs" />
+    <Compile Include="Values\Real.cs" />
+    <Compile Include="Values\Text.cs" />
     <Compile Include="UnaryOperators\Call.cs" />
     <Compile Include="UnaryOperators\ICallable.cs" />
     <Compile Include="UnaryOperators\Minus.cs" />

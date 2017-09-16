@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
+using AESharp.BinaryOperators;
+using AESharp.KeyExpressions;
+using AESharp.UnaryOperators;
+using AESharp.Values;
+using Boolean = AESharp.Values.Boolean;
 
-namespace AESharp
+namespace AESharp.Parser
 {
 
     public enum ParseContext
@@ -20,55 +26,49 @@ namespace AESharp
 
     public class Parser
     {
-        Stack<Scope> ScopeStack = new Stack<Scope>();
-        Stack<ParseContext> ContextStack = new Stack<ParseContext>();
+        private readonly Stack<Scope> _scopeStack = new Stack<Scope>();
+        private readonly Stack<ParseContext> _contextStack = new Stack<ParseContext>();
 
-        Stack<Queue<Expression>> ExprStack = new Stack<Queue<Expression>>();
-        Stack<Queue<PrefixOperator>> PrefixStack = new Stack<Queue<PrefixOperator>>();
-        Stack<Queue<PostfixOperator>> PostfixStack = new Stack<Queue<PostfixOperator>>();
-        Stack<Queue<BinaryOperator>> BinaryStack = new Stack<Queue<BinaryOperator>>();
+        private readonly Stack<Queue<Expression>> _exprStack = new Stack<Queue<Expression>>();
+        private readonly Stack<Queue<PrefixOperator>> _prefixStack = new Stack<Queue<PrefixOperator>>();
+        private readonly Stack<Queue<PostfixOperator>> _postfixStack = new Stack<Queue<PostfixOperator>>();
+        private readonly Stack<Queue<BinaryOperator>> _binaryStack = new Stack<Queue<BinaryOperator>>();
 
-        Evaluator Evaluator;
-        Scope CurScope { get { return ScopeStack.Peek(); } }
-        ParseContext CurContext { get { return ContextStack.Peek(); } }
+        private Evaluator.Evaluator _evaluator;
+        private Scope CurScope => _scopeStack.Peek();
+        private ParseContext CurContext => _contextStack.Peek();
 
-        Queue<Expression> CurExprStack { get { return ExprStack.Peek(); } }
-        Queue<PrefixOperator> CurPrefixStack { get { return PrefixStack.Peek(); } }
-        Queue<PostfixOperator> CurPostfixStack { get { return PostfixStack.Peek(); } }
-        Queue<BinaryOperator> CurBinaryStack { get { return BinaryStack.Peek(); } }
+        private Queue<Expression> CurExprStack => _exprStack.Peek();
+        private Queue<PrefixOperator> CurPrefixStack => _prefixStack.Peek();
+        private Queue<PostfixOperator> CurPostfixStack => _postfixStack.Peek();
+        private Queue<BinaryOperator> CurBinaryStack => _binaryStack.Peek();
 
-        readonly Token EOS = new Token(TokenKind.END_OF_STRING, "END_OF_STRING", new Pos());
+        private readonly Token _eos = new Token(TokenKind.EndOfString, "END_OF_STRING", new Pos());
 
-        Queue<Token> Tokens;
-        Token CurToken { get { return Tokens.Count > 0 ? Tokens.Peek() : EOS; } }
+        private Queue<Token> _tokens;
+        private Token CurToken => _tokens.Count > 0 ? _tokens.Peek() : _eos;
 
-        bool Error { get { return Evaluator.Error != null; } }
-        bool ExpectPrefix = true;
+        private bool Error;
+        private bool _expectPrefix = true;
 
-        public Parser(Evaluator eval)
+        public Expression Parse(string parseString)
         {
-            Evaluator = eval;
-        }
-
-        public void Parse(string parseString)
-        {
-            Evaluator.Error = null;
-
-            Tokens = Scanner.Tokenize(parseString, out Evaluator.Error);
+            _tokens = Scanner.Tokenize(parseString, out var error);
             if (Error)
-                return;
+                return error;
                 
-            ParseScope(false, true);
+            var result = ParseScope(false, true);
 
-            if (Error)
-                Clear();
+            if (Error) Clear();
+
+            return result;
         }
 
         #region Peek Eat
 
         public bool Peek()
         {
-            return Tokens.Count > 0;
+            return _tokens.Count > 0;
         }
 
         public bool Peek(TokenKind kind)
@@ -78,17 +78,17 @@ namespace AESharp
 
         public bool Eat()
         {
-            if (Tokens.Count > 0)
-                Tokens.Dequeue();
+            if (_tokens.Count > 0)
+                _tokens.Dequeue();
 
-            return Tokens.Count > 0;
+            return _tokens.Count > 0;
         }
 
         public bool Eat(TokenKind kind)
         {
-            if (Tokens.Count > 0 && Tokens.Peek().Kind == kind)
+            if (_tokens.Count > 0 && _tokens.Peek().Kind == kind)
             {
-                Tokens.Dequeue();
+                _tokens.Dequeue();
                 return true;
             }
 
@@ -99,72 +99,72 @@ namespace AESharp
 
         public void Clear()
         {
-            ScopeStack.Clear();
-            ContextStack.Clear();
-            ExprStack.Clear();
-            PrefixStack.Clear();
-            PostfixStack.Clear();
-            BinaryStack.Clear();
+            _scopeStack.Clear();
+            _contextStack.Clear();
+            _exprStack.Clear();
+            _prefixStack.Clear();
+            _postfixStack.Clear();
+            _binaryStack.Clear();
         }
 
         public Expression ParseScope(bool shared = false, bool global = false, bool @class = false)
         {
-            while (Eat(TokenKind.NEW_LINE));
+            while (Eat(TokenKind.NewLine));
 
             if (global)
             {
-                ContextStack.Push(ParseContext.ScopeGlobal);
-                ScopeStack.Push(Evaluator);
+                _contextStack.Push(ParseContext.ScopeGlobal);
+                _scopeStack.Push(new Scope());
             }
             else if (@class)
             {
-                ContextStack.Push(ParseContext.ScopeClass);
-                ScopeStack.Push(new Class(CurScope));
+                _contextStack.Push(ParseContext.ScopeClass);
+                _scopeStack.Push(new Class(CurScope));
 
-                while (Eat(TokenKind.NEW_LINE));
+                while (Eat(TokenKind.NewLine));
 
-                if (!Eat(TokenKind.CURLY_START))
+                if (!Eat(TokenKind.CurlyStart))
                     return ReportError("Missing { bracket");
             }
-            else if (Eat(TokenKind.CURLY_START))
+            else if (Eat(TokenKind.CurlyStart))
             {
-                ContextStack.Push(ParseContext.ScopeMulti);
-                ScopeStack.Push(new Scope(CurScope, shared));
+                _contextStack.Push(ParseContext.ScopeMulti);
+                _scopeStack.Push(new Scope(CurScope, shared));
             }
             else
             {
-                ContextStack.Push(ParseContext.ScopeSingle);
-                ScopeStack.Push(new Scope(CurScope, shared));
+                _contextStack.Push(ParseContext.ScopeSingle);
+                _scopeStack.Push(new Scope(CurScope, shared));
             }
 
             ParseExpressions();
             if (Error)
                 return CurScope.Error;
 
-            if ((CurContext == ParseContext.ScopeMulti || CurContext == ParseContext.ScopeClass)  && !Eat(TokenKind.CURLY_END))
+            if ((CurContext == ParseContext.ScopeMulti || CurContext == ParseContext.ScopeClass)  && !Eat(TokenKind.CurlyEnd))
                 return ReportError("Missing } bracket");
                 
-            ContextStack.Pop();
-            return ScopeStack.Pop();
+            _contextStack.Pop();
+            return _scopeStack.Pop();
         }
 
         public void ParseExpressions()
         {
             while (true)
             {
-                while (Eat(TokenKind.NEW_LINE));
+                while (Eat(TokenKind.NewLine));
                 CurScope.Expressions.Add(ParseExpr());
-                while (Eat(TokenKind.NEW_LINE));
+                while (Eat(TokenKind.NewLine));
 
                 switch (CurToken.Kind)
                 {
-                    case TokenKind.CURLY_END:
-                    case TokenKind.ELIF:
-                    case TokenKind.ELSE:
-                    case TokenKind.END_OF_STRING:
+                    case TokenKind.CurlyEnd:
+                    case TokenKind.Elif:
+                    case TokenKind.Else:
+                    case TokenKind.EndOfString:
                         return;
 
-                    case TokenKind.SEMICOLON:
+                    case TokenKind.Semicolon:
                         Eat();
                         break;
                 }
@@ -184,31 +184,31 @@ namespace AESharp
             if (eat)
                 Eat();
 
-            ExprStack.Push(new Queue<Expression>());
-            PrefixStack.Push(new Queue<PrefixOperator>());
-            PostfixStack.Push(new Queue<PostfixOperator>());
-            BinaryStack.Push(new Queue<BinaryOperator>());
+            _exprStack.Push(new Queue<Expression>());
+            _prefixStack.Push(new Queue<PrefixOperator>());
+            _postfixStack.Push(new Queue<PostfixOperator>());
+            _binaryStack.Push(new Queue<BinaryOperator>());
 
-            ExpectPrefix = true;
+            _expectPrefix = true;
 
             while (!done)
             {
                 switch (CurToken.Kind)
                 {
-                    case TokenKind.END_OF_STRING:
+                    case TokenKind.EndOfString:
                         done = true;
                         break;
-                    case TokenKind.NEW_LINE:
+                    case TokenKind.NewLine:
                         done |= CurContext != ParseContext.Parenthesis;
                         break;
 
-                    case TokenKind.SEMICOLON:
+                    case TokenKind.Semicolon:
                         if (CurContext == ParseContext.List)
                             ReportError("Unexpected ';' in " + CurContext);
                         else
                             done = true;
                         break;
-                    case TokenKind.COMMA:
+                    case TokenKind.Comma:
                         if (CurContext == ParseContext.List)
                             done = true;
                         else
@@ -216,226 +216,226 @@ namespace AESharp
                         Eat();
                         break;
 
-                    case TokenKind.IF:
+                    case TokenKind.If:
                         done = true;
                         SetupExpr(ParseIf(), false);
                         break;
-                    case TokenKind.FOR:
+                    case TokenKind.For:
                         SetupExpr(ParseFor(), false);
                         break;
-                    case TokenKind.WHILE:
+                    case TokenKind.While:
                         SetupExpr(ParseWhile(), false);
                         break;
-                    case TokenKind.RET:
+                    case TokenKind.Ret:
                         done = true;
                         SetupExpr(new RetExpr(ParseExpr(true), CurScope), false);
                         break;
-                    case TokenKind.IMPORT:
+                    case TokenKind.Import:
                         done = true;
                         SetupExpr(new ImportExpr(ParseExpr(true), CurScope), false);
                         break;
-                    case TokenKind.GLOBAL:
+                    case TokenKind.Global:
                         done = true;
                         SetupExpr(new GlobalExpr(ParseExpr(true), CurScope), false);
                         break;
-                    case TokenKind.CLASS:
+                    case TokenKind.Class:
                         done = true;
                         Eat();
                         SetupExpr(ParseScope(false, false, true), false);
                         break;
-                    case TokenKind.COLON:
+                    case TokenKind.Colon:
                         if (CurContext == ParseContext.Colon)
                             done = true;
                         else
                             ReportError("Unexpected ':' in " + CurContext);
                         break;
                     
-                    case TokenKind.ELIF:
+                    case TokenKind.Elif:
                         done = true;
                         break;
-                    case TokenKind.ELSE:
+                    case TokenKind.Else:
                         done = true;
                         break;
 
 
-                    case TokenKind.INTEGER:
-                    case TokenKind.DECIMAL:
-                    case TokenKind.IMAG_INT:
-                    case TokenKind.IMAG_DEC:
+                    case TokenKind.Integer:
+                    case TokenKind.Decimal:
+                    case TokenKind.ImagInt:
+                    case TokenKind.ImagDec:
                         SetupExpr(ParseNumber(), true);
                         break;
                     
-                    case TokenKind.TEXT:
+                    case TokenKind.Text:
                         SetupExpr(new Text(CurToken.Value),true);
                         break;
                     
-                    case TokenKind.IDENTIFIER:
+                    case TokenKind.Identifier:
                         SetupExpr(new Variable(CurToken.Value, CurScope), true);
                         break;
 
-                    case TokenKind.TRUE:
+                    case TokenKind.True:
                         SetupExpr(new Boolean(true),true);
                         break;
-                    case TokenKind.FALSE:
+                    case TokenKind.False:
                         SetupExpr(new Boolean(false),true);
                         break;
-                    case TokenKind.NULL:
+                    case TokenKind.Null:
                         SetupExpr(new Null(),true);
                         break;
-                    case TokenKind.SELF:
+                    case TokenKind.Self:
                         SetupExpr(new Self(CurScope),true);
                         break;
 
-                    case TokenKind.PARENT_START:
+                    case TokenKind.ParentStart:
                         SetupExpr(ParseParenthesis(),false);
                         break;
-                    case TokenKind.SQUARE_START:
+                    case TokenKind.SquareStart:
                         SetupExpr(ParseList(),false);
                         break;
-                    case TokenKind.CURLY_START:
+                    case TokenKind.CurlyStart:
                         if (CurScope is Class)
                             SetupExpr(ParseScope(true), false);
                         else
                             SetupExpr(ParseScope(), false);
                         break;
 
-                    case TokenKind.HASH:
+                    case TokenKind.Hash:
                         ParseComment();
                         break;
 
-                    case TokenKind.PARENT_END:
+                    case TokenKind.ParentEnd:
                         if (CurContext == ParseContext.Parenthesis)
                             done = true;
                         else
                             ReportError("Unexpected ')' in " + CurContext);
                         break;
-                    case TokenKind.SQUARE_END:
+                    case TokenKind.SquareEnd:
                         if (CurContext == ParseContext.List)
                             done = true;
                         else
                             ReportError("Unexpected ']' in " + CurContext);
                         break;
-                    case TokenKind.CURLY_END:
+                    case TokenKind.CurlyEnd:
                         if (CurContext == ParseContext.ScopeMulti || CurContext == ParseContext.ScopeClass || CurContext == ParseContext.ScopeSingle)
                             done = true;
                         else
                             ReportError("Unexpected '}' in " + CurContext);
                         break;
                     
-                    case TokenKind.TILDE:
-                        if (ExpectPrefix)
+                    case TokenKind.Tilde:
+                        if (_expectPrefix)
                             SetupPrefixOp(new Referation());
                         else
                             ReportError(CurToken + " is not supported as binary operator");
                         break;
 
-                    case TokenKind.ADD:
-                        if (!ExpectPrefix) // Ignore Unary +
+                    case TokenKind.Add:
+                        if (!_expectPrefix) // Ignore Unary +
                             SetupBinaryOp(new Add());
                         break;
-                    case TokenKind.SUB:
-                        if (ExpectPrefix)
+                    case TokenKind.Sub:
+                        if (_expectPrefix)
                             SetupPrefixOp(new Minus());
                         else
                             SetupBinaryOp(new Sub());
                         break;
-                    case TokenKind.NEG:
-                        if (ExpectPrefix)
+                    case TokenKind.Neg:
+                        if (_expectPrefix)
                             SetupPrefixOp(new Negation());
                         else
                             ReportError(CurToken + " is not supported as binary operator");
                         break;
-                    case TokenKind.MUL:
-                        if (ExpectPrefix)
+                    case TokenKind.Mul:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Mul());
                         break;
-                    case TokenKind.DIV:
-                        if (ExpectPrefix)
+                    case TokenKind.Div:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Div());
                         break;
-                    case TokenKind.MOD:
-                        if (ExpectPrefix)
+                    case TokenKind.Mod:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Mod());
                         break;
-                    case TokenKind.EXP:
-                        if (ExpectPrefix)
+                    case TokenKind.Exp:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Exp());
                         break;
 
-                    case TokenKind.ASSIGN:
-                        if (ExpectPrefix)
+                    case TokenKind.Assign:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                         {
                             SetupBinaryOp(new Assign());
-                            while (Eat(TokenKind.NEW_LINE)); // Allow assignment on new line
+                            while (Eat(TokenKind.NewLine)); // Allow assignment on new line
                         }
                         break;
-                    case TokenKind.EQUAL:
-                        if (ExpectPrefix)
+                    case TokenKind.Equal:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Equal());
                         break;
-                    case TokenKind.BOOL_EQUAL:
-                        if (ExpectPrefix)
+                    case TokenKind.BoolEqual:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new BooleanEqual());
                         break;
-                    case TokenKind.NOT_EQUAL:
-                        if (ExpectPrefix)
+                    case TokenKind.NotEqual:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new NotEqual());
                         break;
-                    case TokenKind.LESS_EQUAL:
-                        if (ExpectPrefix)
+                    case TokenKind.LessEqual:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new LesserEqual());
                         break;
-                    case TokenKind.GREAT_EQUAL:
-                        if (ExpectPrefix)
+                    case TokenKind.GreatEqual:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new GreaterEqual());
                         break;
-                    case TokenKind.LESS:
-                        if (ExpectPrefix)
+                    case TokenKind.Less:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Lesser());
                         break;
-                    case TokenKind.GREAT:
-                        if (ExpectPrefix)
+                    case TokenKind.Great:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Greater());
                         break;
-                    case TokenKind.AND:
-                        if (ExpectPrefix)
+                    case TokenKind.And:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new And());
                         break;
-                    case TokenKind.OR:
-                        if (ExpectPrefix)
+                    case TokenKind.Or:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Or());
                         break;
 
-                    case TokenKind.DOT:
-                        if (ExpectPrefix)
+                    case TokenKind.Dot:
+                        if (_expectPrefix)
                             ReportError(CurToken + " is not supported as unary operator");
                         else
                             SetupBinaryOp(new Dot());
@@ -448,22 +448,22 @@ namespace AESharp
 
                 if (Error)
                 {
-                    PrefixStack.Pop();
-                    PostfixStack.Pop();
-                    ExprStack.Pop();
-                    BinaryStack.Pop();
+                    _prefixStack.Pop();
+                    _postfixStack.Pop();
+                    _exprStack.Pop();
+                    _binaryStack.Pop();
                     return null;
                 }
             }
                 
-            PrefixStack.Pop();
-            PostfixStack.Pop();
-            return CreateAst(ExprStack.Pop(), BinaryStack.Pop());
+            _prefixStack.Pop();
+            _postfixStack.Pop();
+            return CreateAst(_exprStack.Pop(), _binaryStack.Pop());
         }
 
         public void ParsePostfix()
         {
-            while (Peek(TokenKind.SQUARE_START))
+            while (Peek(TokenKind.SquareStart))
             {
                 var args = ParseList();
                 if (Error)
@@ -510,7 +510,7 @@ namespace AESharp
             }
 
             CurExprStack.Enqueue(expr);
-            ExpectPrefix = false;
+            _expectPrefix = false;
 
             if (CurExprStack.Count != CurBinaryStack.Count + 1)
                 ReportError("Missing operator");
@@ -534,7 +534,7 @@ namespace AESharp
             op.CurScope = CurScope;
 
             CurBinaryStack.Enqueue(op);
-            ExpectPrefix = true;
+            _expectPrefix = true;
 
             if (CurExprStack.Count != CurBinaryStack.Count)
                 ReportError("Missing operand");
@@ -618,24 +618,24 @@ namespace AESharp
 
             switch (CurToken.Kind)
             {
-                case TokenKind.INTEGER:
+                case TokenKind.Integer:
                     if (Int64.TryParse(CurToken.Value, out intRes))
                         return new Integer(intRes);
                     else
                         return ReportError("Int overflow");
                 
-                case TokenKind.DECIMAL:
+                case TokenKind.Decimal:
                     if (decimal.TryParse(CurToken.Value, out decRes))
                         return new Irrational(decRes);
                     else
                         return ReportError("Decimal overflow");
-                case TokenKind.IMAG_INT:
+                case TokenKind.ImagInt:
                     if (Int64.TryParse(CurToken.Value, out intRes))
                         return new Complex(new Integer(0), new Integer(intRes));
                     else
                         return ReportError("Imaginary int overflow");
                 
-                case TokenKind.IMAG_DEC:
+                case TokenKind.ImagDec:
                     if (decimal.TryParse(CurToken.Value, out decRes))
                         return new Complex(new Integer(0), new Irrational(decRes));
                     else
@@ -653,7 +653,7 @@ namespace AESharp
 
             Eat();
 
-            ContextStack.Push(ParseContext.If);
+            _contextStack.Push(ParseContext.If);
             var ifexpr = new IfExpr(CurScope);
 
             cond = ParseColon();
@@ -666,8 +666,8 @@ namespace AESharp
                 return null;
             ifexpr.Expressions.Items.Add(expr);
 
-            while (Eat(TokenKind.NEW_LINE));
-            while (Eat(TokenKind.ELIF))
+            while (Eat(TokenKind.NewLine));
+            while (Eat(TokenKind.Elif))
             {
                 cond = ParseColon();
                 if (Error)
@@ -679,13 +679,13 @@ namespace AESharp
                     return null;
                 ifexpr.Expressions.Items.Add(expr);
 
-                while (Eat(TokenKind.NEW_LINE));
+                while (Eat(TokenKind.NewLine));
             }
 
-            while (Eat(TokenKind.NEW_LINE));
-            if (Eat(TokenKind.ELSE))
+            while (Eat(TokenKind.NewLine));
+            if (Eat(TokenKind.Else))
             {
-                Eat(TokenKind.COLON); // Optional colon
+                Eat(TokenKind.Colon); // Optional colon
 
                 expr = ParseScope(true);
                 if (Error)
@@ -693,7 +693,7 @@ namespace AESharp
                 ifexpr.Expressions.Items.Add(expr);
             }
 
-            ContextStack.Pop();
+            _contextStack.Pop();
             return ifexpr;
         }
 
@@ -701,10 +701,10 @@ namespace AESharp
         {
             Eat();
 
-            ContextStack.Push(ParseContext.For);
+            _contextStack.Push(ParseContext.For);
             var forexpr = new ForExpr(CurScope);
 
-            if (Peek(TokenKind.IDENTIFIER))
+            if (Peek(TokenKind.Identifier))
             {
                 forexpr.Var = CurToken.Value;
                 Eat();
@@ -712,7 +712,7 @@ namespace AESharp
             else
                 return ReportError("For: Missing symbol");
 
-            if (!Eat(TokenKind.IN))
+            if (!Eat(TokenKind.In))
                 return ReportError("For: Missing in");
 
             forexpr.List = ParseColon();
@@ -723,7 +723,7 @@ namespace AESharp
             if (Error)
                 return null;
 
-            ContextStack.Pop();
+            _contextStack.Pop();
             return forexpr;
         }
 
@@ -732,7 +732,7 @@ namespace AESharp
             Expression expr;
             Eat();
 
-            ContextStack.Push(ParseContext.While);
+            _contextStack.Push(ParseContext.While);
             var whileexpr = new WhileExpr(CurScope);
 
             whileexpr.Condition = ParseColon();
@@ -744,17 +744,17 @@ namespace AESharp
                 return null;
             whileexpr.Condition.CurScope = whileexpr.WhileScope = (Scope)expr;
 
-            ContextStack.Pop();
+            _contextStack.Pop();
             return whileexpr;
         }
 
         public Expression ParseColon()
         {
-            ContextStack.Push(ParseContext.Colon);
+            _contextStack.Push(ParseContext.Colon);
             var res = ParseExpr();
-            ContextStack.Pop();
+            _contextStack.Pop();
 
-            if (!Eat(TokenKind.COLON))
+            if (!Eat(TokenKind.Colon))
                 return ReportError("Missing :");
 
             return res;
@@ -765,27 +765,27 @@ namespace AESharp
             var list = new List();
 
             Eat();
-            ContextStack.Push(ParseContext.List);
+            _contextStack.Push(ParseContext.List);
 
-            while (Tokens.Count > 0)
+            while (_tokens.Count > 0)
             {
-                if (!(Eat(TokenKind.COMMA) || Eat(TokenKind.NEW_LINE)))
+                if (!(Eat(TokenKind.Comma) || Eat(TokenKind.NewLine)))
                     list.Items.Add(ParseExpr());
 
                 if (Error)
                     return list;
 
-                if (Eat(TokenKind.SQUARE_END))
+                if (Eat(TokenKind.SquareEnd))
                     break;
 
-                if (Peek(TokenKind.END_OF_STRING))
+                if (Peek(TokenKind.EndOfString))
                 {
                     ReportError("Missing ] bracket");
                     break;
                 }
             }
 
-            ContextStack.Pop();
+            _contextStack.Pop();
 
             if (list.Items.Count == 1 && list.Items[0] is Null)
                 list.Items.Clear();
@@ -796,17 +796,17 @@ namespace AESharp
         public Expression ParseParenthesis()
         {
             Eat();
-            ContextStack.Push(ParseContext.Parenthesis);
+            _contextStack.Push(ParseContext.Parenthesis);
 
             Expression parent = ParseExpr();
 
             if (Error)
                 return null;
 
-            if (!Eat(TokenKind.PARENT_END))
+            if (!Eat(TokenKind.ParentEnd))
                 ReportError("Missing ) bracket");
 
-            ContextStack.Pop();
+            _contextStack.Pop();
 
             return parent;
         }
@@ -817,7 +817,7 @@ namespace AESharp
             {
                 Eat();
             }
-            while (CurToken.Kind != TokenKind.NEW_LINE && CurToken.Kind != TokenKind.END_OF_STRING);
+            while (CurToken.Kind != TokenKind.NewLine && CurToken.Kind != TokenKind.EndOfString);
         }
 
         public Expression ReportError(string msg)
@@ -825,7 +825,7 @@ namespace AESharp
             var error = new Error(msg);
             error.Position = CurToken.Position;
 
-            Evaluator.Error = error;
+            Error = true;
 
             return null;
         }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class AbsFunc : SysFunc
     {
@@ -30,7 +31,7 @@ namespace AESharp
             {
                 var c = res as Complex;
 
-                return new Irrational(Math.Sqrt(Math.Pow((double)Math.Abs(c.real.@decimal),2) + Math.Pow((double)Math.Abs(c.imag.@decimal),2)));
+                return new Irrational(Math.Sqrt(Math.Pow((double)Math.Abs(c.Real.Decimal),2) + Math.Pow((double)Math.Abs(c.Imag.Decimal),2)));
             }
 
             return new Error(this, "Could not take Abs of: " + args[0]);

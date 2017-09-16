@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class RangeFunc : SysFunc
     {
@@ -28,7 +29,7 @@ namespace AESharp
 
             step = args[2].Evaluate() as Real;
 
-            var list = new AESharp.List ();
+            var list = new List ();
             for (Decimal i = start; i <= end; i += step)
             {
                 list.Items.Add(new Irrational(i));

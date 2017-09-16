@@ -1,13 +1,13 @@
-﻿namespace AESharp
+﻿namespace AESharp.Evaluator
 {
     public class DotData : DrawData
     {
-        public int x;
-        public int y;
+        public int X;
+        public int Y;
 
-        public int r;
-        public int g;
-        public int b;
+        public int R;
+        public int G;
+        public int B;
     }
 }
 

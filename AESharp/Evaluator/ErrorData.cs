@@ -1,25 +1,27 @@
-﻿namespace AESharp
+﻿using AESharp.Parser;
+
+namespace AESharp.Evaluator
 {
     public class ErrorData : EvalData
     {
-        public string msg;
+        public string Msg;
         public Pos Position;
 
         public ErrorData(string err)
         {
-            this.msg = err;
+            Msg = err;
         }
 
         public ErrorData(Error err)
         {
-            this.msg = err.ErrorMessage;
-            this.Position = err.Position;
+            Msg = err.ErrorMessage;
+            Position = err.Position;
         }
 
         public ErrorData(Expression expr, string err)
         {
-            this.msg = err;
-            this.Position = expr.Position;
+            Msg = err;
+            Position = expr.Position;
         }
 
         public override string ToString()
@@ -28,7 +30,7 @@
 
             str += "[" + Position.Column;
             str += ";" + Position.Line + "]";
-            str += msg;
+            str += Msg;
 
             return str;
         }

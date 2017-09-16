@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.UnaryOperators;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class AsinFunc : SysFunc, IInvertable
     {
@@ -33,7 +35,7 @@ namespace AESharp
                 if (value == 0.5)
                     return Constant.Deg30 * (deg ? new Irrational(1M) : Constant.DegToRad);
                 if (value >= -1 && value <= 1)
-                    return new Irrational((decimal)Math.Asin(value) * (deg ? Constant.RadToDeg.@decimal  : 1)).Evaluate();
+                    return new Irrational((decimal)Math.Asin(value) * (deg ? Constant.RadToDeg.V : 1)).Evaluate();
             }
 
             return new Error(this, "Could not take ASin of: " + args[0]);
@@ -54,7 +56,7 @@ namespace AESharp
         {
             var arg = new List();
             arg.Items.Add(other);
-            return SysFunc.MakeFunction(arg, CurScope, "sin");
+            return MakeFunction(arg, CurScope, "sin");
         }
     }
 }

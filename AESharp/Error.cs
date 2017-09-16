@@ -1,4 +1,7 @@
-﻿namespace AESharp
+﻿using AESharp.Parser;
+using AESharp.SystemFunctions;
+
+namespace AESharp
 {
     public class Error : Expression
     {
@@ -28,6 +31,8 @@
 
             Position = expr.Position;
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override string ToString()
         {

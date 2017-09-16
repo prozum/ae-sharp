@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.UnaryOperators;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class TanFunc : SysFunc, IInvertable
     {
@@ -22,10 +24,10 @@ namespace AESharp
 
             if (res is Real)
             {
-                if (res.CompareTo(Constant.Deg26d57))
+                if (res.CompareTo(Constant.Deg26D57))
                     return Constant.Half;
 
-                return new Irrational(Math.Tan((double)((deg ? Constant.DegToRad.@decimal : 1) * (res as Real)))).Evaluate();
+                return new Irrational(Math.Tan((double)((deg ? Constant.DegToRad.V : 1) * (res as Real)))).Evaluate();
             }
 
             return new Error(this, "Could not take Tan of: " + args[0]);
@@ -46,7 +48,7 @@ namespace AESharp
         {
             var arg = new List();
             arg.Items.Add(other);
-            return SysFunc.MakeFunction(arg, CurScope, "atan");
+            return MakeFunction(arg, CurScope, "atan");
         }
     }
 }

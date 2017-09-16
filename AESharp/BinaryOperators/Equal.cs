@@ -1,12 +1,14 @@
-﻿namespace AESharp
+﻿namespace AESharp.BinaryOperators
 {
     public class Equal : BinaryOperator
     {
-        public override string Identifier { get { return "="; } }
-        public override int Priority { get{ return 0; } }
+        public override string Identifier => "=";
+        public override int Priority => 0;
 
         public Equal() { }
         public Equal(Expression left, Expression right) : base(left, right) { }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         protected override Expression ExpandHelper(Expression left, Expression right)
         {

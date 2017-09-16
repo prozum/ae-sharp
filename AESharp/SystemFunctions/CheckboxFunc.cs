@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using AESharp.Evaluator;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class CheckboxFunc : SysFunc
     {

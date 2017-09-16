@@ -1,12 +1,16 @@
-﻿namespace AESharp
+﻿using AESharp.UnaryOperators;
+
+namespace AESharp.BinaryOperators
 {
     public class Dot : BinaryOperator
     {
-        public override string Identifier { get { return "."; } }
-        public override int Priority { get{ return 100; } }
+        public override string Identifier => ".";
+        public override int Priority => 100;
 
         public Dot() { }
         public Dot(Expression left, Expression right) : base(left, right) { }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Value
         {

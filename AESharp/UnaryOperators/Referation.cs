@@ -1,19 +1,15 @@
-﻿namespace AESharp
+﻿namespace AESharp.UnaryOperators
 {
     public class Referation : PrefixOperator
     {
         public Referation() : base("~") { }
 
+        public override bool Visit(IVisitor v) => v.Visit(this);
+
         public override Expression Value
         {
-            get
-            {
-                return Child.Value;
-            }
-            set
-            {
-                Child.Value = value;
-            }
+            get => Child.Value;
+            set => Child.Value = value;
         }
 
         public override Expression Evaluate()

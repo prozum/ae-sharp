@@ -1,12 +1,14 @@
-﻿namespace AESharp
+﻿namespace AESharp.BinaryOperators
 {
     public class Or : BinaryOperator
     {
-        public override string Identifier { get { return "|"; } }
-        public override int Priority { get{ return 10; } }
+        public override string Identifier => "|";
+        public override int Priority => 10;
 
         public Or() { }
         public Or(Expression left, Expression right) : base(left, right) { }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {

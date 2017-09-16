@@ -1,4 +1,7 @@
-﻿namespace AESharp
+﻿using AESharp.SystemFunctions;
+using AESharp.Values;
+
+namespace AESharp.UnaryOperators
 {
     public class Call : PostfixOperator
     {
@@ -21,9 +24,11 @@
             CurScope = scope;
         }
 
+        public override bool Visit(IVisitor v) => v.Visit(this);
+
         public override Scope CurScope
         {
-            get { return base.CurScope; }
+            get => base.CurScope;
             set
             {
                 base.CurScope = value;

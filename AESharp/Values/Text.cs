@@ -1,17 +1,21 @@
-﻿namespace AESharp
+﻿using AESharp.SystemFunctions;
+
+namespace AESharp.Values
 {
     public class Text : Expression
     {
-        public string @string;
+        public string String;
 
         public Text(string value = "")
         {
-            @string = value;
+            String = value;
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public static implicit operator string(Text t)
         {
-            return t.@string;
+            return t.String;
         }
 
         public override Expression Evaluate()
@@ -21,19 +25,19 @@
 
         public override Expression Clone(Scope scope)
         {
-            return new Text(@string);
+            return new Text(String);
         }
 
         public override string ToString()
         {
-            return @string;
+            return String;
         }
 
         public override bool CompareTo(Expression other)
         {
             if (other is Text)
             {
-                return (@string.CompareTo((other as Text).@string) == 0) ? true : false;
+                return (String.CompareTo((other as Text).String) == 0) ? true : false;
             }
             if (other is TypeFunc)
             {
@@ -41,7 +45,7 @@
 
                 if (text is Text)
                 {
-                    return (@string.CompareTo((text as Text).@string) == 0) ? true : false;
+                    return (String.CompareTo((text as Text).String) == 0) ? true : false;
                 }
             }
 
@@ -50,32 +54,32 @@
 
         public override Expression AddWith(Text other)
         {
-            return new Text(@string + other);
+            return new Text(String + other);
         }
 
         public override Expression AddWith(Integer other)
         {
-            return new Text(@string + other.ToString());
+            return new Text(String + other.ToString());
         }
 
         public override Expression AddWith(Rational other)
         {
-            return new Text(@string + other.ToString());
+            return new Text(String + other.ToString());
         }
 
         public override Expression AddWith(Irrational other)
         {
-            return new Text(@string + other.ToString());
+            return new Text(String + other.ToString());
         }
 
         public override Expression AddWith(Complex other)
         {
-            return new Text(@string + other.ToString());
+            return new Text(String + other.ToString());
         }
 
         public override Expression AddWith(Boolean other)
         {
-            return new Text(@string + other.ToString());
+            return new Text(String + other.ToString());
         }
     }
 }

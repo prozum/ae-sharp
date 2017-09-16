@@ -1,73 +1,63 @@
 ﻿using System;
+using AESharp.SystemFunctions;
+using AESharp.Values;
+using Boolean = AESharp.Values.Boolean;
 
-namespace AESharp
+namespace AESharp.Evaluator
 {
-    public class Evaluator : Scope
+    public class Evaluator
     {
-        public Parser Parser;
-
         public static Expression Eval(string parseString)
         {
-            var eval = new Evaluator();
+            var parser = new Parser.Parser();
+            var result = parser.Parse(parseString);
 
-            eval.Parse(parseString);
+            if (!(result is Scope s)) return result.Evaluate();
 
-            return eval.Evaluate();
-        }
+            s.Global = s;
 
-        public Evaluator()
-        {
-            Parser = new Parser(this);
-            Global = this;
+            s.SetVar("reduc", new Boolean(true));
+            s.SetVar("debug", new Boolean(true));
 
-            SetVar("reduc", new Boolean(true));
-            SetVar("debug", new Boolean(true));
+            var scope = new Scope(s);
+            s.SetVar("sys", scope);
+            scope.SetVar("print", new PrintFunc(s));
+            scope.SetVar("dir", new DirFunc(s));
+            scope.SetVar("eval", new EvalFunc(s));
+            scope.SetVar("type", new TypeFunc(s));
+            scope.SetVar("clone", new CloneFunc(s));
 
-            var scope = new Scope(this);
-            SetVar("sys", scope);
-            scope.SetVar("print", new PrintFunc(this));
-            scope.SetVar("dir", new DirFunc(this));
-            scope.SetVar("eval", new EvalFunc(this));
-            scope.SetVar("type", new TypeFunc(this));
-            scope.SetVar("clone", new CloneFunc(this));
-
-            scope = new Scope(this);
-            SetVar("math", scope);
+            scope = new Scope(s);
+            s.SetVar("math", scope);
             scope.SetVar("pi", new Irrational((decimal)Math.PI));
-            scope.SetVar("abs", new AbsFunc(this));
-            scope.SetVar("solve", new SolveFunc(this));
-            scope.SetVar("sqrt", new SqrtFunc(this));
-            scope.SetVar("expand", new ExpandFunc(this));
-            scope.SetVar("reduce", new ReduceFunc(this));
-            scope.SetVar("range", new RangeFunc(this));
+            scope.SetVar("abs", new AbsFunc(s));
+            scope.SetVar("solve", new SolveFunc(s));
+            scope.SetVar("sqrt", new SqrtFunc(s));
+            scope.SetVar("expand", new ExpandFunc(s));
+            scope.SetVar("reduce", new ReduceFunc(s));
+            scope.SetVar("range", new RangeFunc(s));
 
-            scope = new Scope(this);
-            SetVar("trig", scope);
+            scope = new Scope(s);
+            s.SetVar("trig", scope);
             scope.SetVar("deg", new Boolean(true));
-            scope.SetVar("sin", new SinFunc(this));
-            scope.SetVar("cos", new CosFunc(this));
-            scope.SetVar("tan", new TanFunc(this));
-            scope.SetVar("asin", new AsinFunc(this));
-            scope.SetVar("acos", new AcosFunc(this));
-            scope.SetVar("atan", new AtanFunc(this));
+            scope.SetVar("sin", new SinFunc(s));
+            scope.SetVar("cos", new CosFunc(s));
+            scope.SetVar("tan", new TanFunc(s));
+            scope.SetVar("asin", new AsinFunc(s));
+            scope.SetVar("acos", new AcosFunc(s));
+            scope.SetVar("atan", new AtanFunc(s));
 
-            scope = new Scope(this);
-            SetVar("draw", scope);
-            scope.SetVar("plot", new PlotFunc(this));
-            scope.SetVar("paraplot", new ParaPlotFunc(this));
-            scope.SetVar("line", new LineFunc(this));
+            scope = new Scope(s);
+            s.SetVar("draw", scope);
+            scope.SetVar("plot", new PlotFunc(s));
+            scope.SetVar("paraplot", new ParaPlotFunc(s));
+            scope.SetVar("line", new LineFunc(s));
 
-            scope = new Scope(this);
-            SetVar("widget", scope);
-            scope.SetVar("checkbox", new CheckboxFunc(this));
-        }
+            scope = new Scope(s);
+            s.SetVar("widget", scope);
+            scope.SetVar("checkbox", new CheckboxFunc(s));
 
-        public void Parse(string parseString)
-        {
-            Expressions.Clear();
-            SideEffects.Clear();
-            Error = null;
-            Parser.Parse(parseString);
+            return s.Evaluate();
         }
     }
 }

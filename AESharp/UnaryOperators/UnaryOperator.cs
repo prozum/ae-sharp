@@ -1,4 +1,4 @@
-﻿namespace AESharp
+﻿namespace AESharp.UnaryOperators
 {
     public abstract class UnaryOperator : Expression
     {
@@ -6,7 +6,7 @@
 
         public override Scope CurScope
         {
-            get { return base.CurScope; }
+            get => base.CurScope;
             set
             {
                 base.CurScope = value;

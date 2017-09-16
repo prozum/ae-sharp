@@ -1,25 +1,21 @@
 ﻿using System;
 
-namespace AESharp
+namespace AESharp.Values
 {
     public class Rational : Real
     {
-        public Int64 numerator;
-        public Int64 denominator;
+        public Int64 Numerator;
+        public Int64 Denominator;
 
         public Rational(Int64 num, Int64 denom)
         {
-            numerator = num;
-            denominator = denom;
+            Numerator = num;
+            Denominator = denom;
         }
 
-        public override decimal @decimal
-        {
-            get
-            {
-                return ((decimal)numerator) / denominator;
-            }
-        }
+        public override bool Visit(IVisitor v) => v.Visit(this);
+
+        public override decimal Decimal => ((decimal)Numerator) / Denominator;
 
         public void Reduce(Integer num, Integer denom)
         {
@@ -33,7 +29,7 @@ namespace AESharp
 
         public override Expression Clone(Scope scope)
         {
-            return new Rational(numerator, denominator);
+            return new Rational(Numerator, Denominator);
         }
             
 
@@ -45,10 +41,10 @@ namespace AESharp
 
         public override Expression AddWith(Rational other)
         {
-            var newNumerator = numerator * other.denominator;
-            var otherNewNumerator = denominator * other.numerator;
+            var newNumerator = Numerator * other.Denominator;
+            var otherNewNumerator = Denominator * other.Numerator;
 
-            return new Rational(newNumerator + otherNewNumerator, denominator * other.denominator);
+            return new Rational(newNumerator + otherNewNumerator, Denominator * other.Denominator);
         }
 
         #endregion
@@ -61,10 +57,10 @@ namespace AESharp
 
         public override Expression SubWith(Rational other)
         {
-            var leftNumerator = numerator * other.denominator;
-            var rightNumerator = denominator * other.numerator;
+            var leftNumerator = Numerator * other.Denominator;
+            var rightNumerator = Denominator * other.Numerator;
 
-            return new Rational(leftNumerator - rightNumerator, denominator * other.denominator);
+            return new Rational(leftNumerator - rightNumerator, Denominator * other.Denominator);
         }
 
         #endregion
@@ -77,7 +73,7 @@ namespace AESharp
 
         public override Expression MulWith(Rational other)
         {
-            return new Rational(numerator * other.numerator, denominator * other.denominator);
+            return new Rational(Numerator * other.Numerator, Denominator * other.Denominator);
         }
 
         #endregion
@@ -90,7 +86,7 @@ namespace AESharp
 
         public override Expression DivWith(Rational other)
         {
-            return this * new Rational(other.denominator, other.numerator);
+            return this * new Rational(other.Denominator, other.Numerator);
         }
 
         #endregion
@@ -98,7 +94,7 @@ namespace AESharp
         #region ExpWith
         public override Expression ExpWith(Integer other)
         {
-            return new Rational(numerator ^ other.@int, denominator ^ other.@int);
+            return new Rational(Numerator ^ other.Int, Denominator ^ other.Int);
         }
 
         #endregion
@@ -111,10 +107,10 @@ namespace AESharp
 
         public override Expression ModWith(Rational other)
         {
-            var newNumerator = numerator * other.denominator;
-            var otherNewNumerator = denominator * other.numerator;
+            var newNumerator = Numerator * other.Denominator;
+            var otherNewNumerator = Denominator * other.Numerator;
 
-            return new Rational(newNumerator % otherNewNumerator, denominator * other.denominator);
+            return new Rational(newNumerator % otherNewNumerator, Denominator * other.Denominator);
         }
 
         #endregion

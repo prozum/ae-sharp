@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using AESharp.BinaryOperators;
+using AESharp.UnaryOperators;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public enum ArgumentType
     {

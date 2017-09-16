@@ -1,10 +1,12 @@
-﻿namespace AESharp
+﻿namespace AESharp.Values
 {
     public class Null : Expression
     {
         public Null()
         {
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override string ToString()
         {

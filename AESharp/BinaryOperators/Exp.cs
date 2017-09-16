@@ -1,12 +1,18 @@
-﻿namespace AESharp
+﻿using AESharp.SystemFunctions;
+using AESharp.UnaryOperators;
+using AESharp.Values;
+
+namespace AESharp.BinaryOperators
 {
     public class Exp : BinaryOperator, IInvertable
     {
-        public override string Identifier { get { return "^"; } }
-        public override int Priority { get{ return 50; } }
+        public override string Identifier => "^";
+        public override int Priority => 50;
 
         public Exp() { }
         public Exp(Expression left, Expression right) : base(left, right) { }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {

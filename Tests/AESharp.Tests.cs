@@ -1,11 +1,12 @@
-﻿using NUnit.Framework;
-using AESharp;
-using System.Collections.Generic;
+﻿using System.Globalization;
 using System.Threading;
-using System.Globalization;
+using AESharp;
+using AESharp.Evaluator;
+using AESharp.Values;
+using NUnit.Framework;
+using List = AESharp.Values.List;
 
-
-namespace AESharp
+namespace Ast.Tests
 {
     [TestFixture]
     public class AstTests
@@ -39,7 +40,7 @@ namespace AESharp
         {
             var res = Evaluator.Eval(inputString);
             Assert.IsTrue(res is Boolean);
-            Assert.IsTrue((res as Boolean).@bool == true);
+            Assert.IsTrue((res as Boolean).Bool == true);
         }
 
         #region Reduce Test Cases
@@ -280,19 +281,19 @@ namespace AESharp
             
             if (res is Integer)
             {
-                Assert.AreEqual(expected, (res as Integer).@int);
+                Assert.AreEqual(expected, (res as Integer).Int);
             }
             else if (res is Rational)
             {
-                Assert.AreEqual(expected, (res as Rational).@decimal);
+                Assert.AreEqual(expected, (res as Rational).Decimal);
             }
             else if (res is Irrational)
             {
-                Assert.AreEqual(expected, (res as Irrational).@decimal);
+                Assert.AreEqual(expected, (res as Irrational).Decimal);
             }
             else if (res is Boolean)
             {
-                Assert.AreEqual(expected, (res as Boolean).@bool);
+                Assert.AreEqual(expected, (res as Boolean).Bool);
             }
             else if (res is Null)
             {

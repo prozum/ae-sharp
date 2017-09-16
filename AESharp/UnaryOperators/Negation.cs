@@ -1,8 +1,10 @@
-﻿namespace AESharp
+﻿namespace AESharp.UnaryOperators
 {
     public class Negation : PrefixOperator
     {
         public Negation() : base("!") { }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {

@@ -1,4 +1,4 @@
-﻿namespace AESharp
+﻿namespace AESharp.KeyExpressions
 {
     public class RetExpr : Expression
     {
@@ -9,7 +9,9 @@
             Expression = expr;
             CurScope = scope;
         }
-            
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
+
         public override Expression Evaluate()
         {
             var res = Expression.Evaluate();
@@ -19,7 +21,7 @@
 
             CurScope.Returns.Items.Clear();
             CurScope.Returns.Items.Add(res);
-            CurScope.Return.@bool = true;
+            CurScope.Return.Bool = true;
 
             return res;
         }

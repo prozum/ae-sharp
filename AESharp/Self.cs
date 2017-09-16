@@ -7,18 +7,14 @@
             CurScope = scope;
         }
 
+        public override bool Visit(IVisitor v) => v.Visit(this);
+
         public override Expression Evaluate()
         {
             return Value;
         }
 
-        public override Expression Value
-        {
-            get
-            {
-                return CurScope;
-            }
-        }
+        public override Expression Value => CurScope;
 
         public override Expression Clone(Scope scope)
         {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.BinaryOperators;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class SqrtFunc : SysFunc, IInvertable
     {

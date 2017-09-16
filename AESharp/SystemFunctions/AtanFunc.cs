@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.UnaryOperators;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class AtanFunc : SysFunc, IInvertable
     {
@@ -30,9 +32,9 @@ namespace AESharp
                 if (value == 1)
                     return Constant.Deg45 * (deg ? new Irrational(1M) : Constant.DegToRad);
                 if (value == 0.5)
-                    return Constant.Deg26d57 * (deg ? new Irrational(1M) : Constant.DegToRad);
+                    return Constant.Deg26D57 * (deg ? new Irrational(1M) : Constant.DegToRad);
 
-                return new Irrational((decimal)Math.Atan(value) * (deg ? Constant.RadToDeg.@decimal : 1)).Evaluate();
+                return new Irrational((decimal)Math.Atan(value) * (deg ? Constant.RadToDeg.V : 1)).Evaluate();
             }
 
             return new Error(this, "Could not take ATan of: " + args[0]);
@@ -53,7 +55,7 @@ namespace AESharp
         {
             var arg = new List();
             arg.Items.Add(other);
-            return SysFunc.MakeFunction(arg, CurScope, "tan");
+            return MakeFunction(arg, CurScope, "tan");
         }
     }
 }

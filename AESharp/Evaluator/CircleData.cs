@@ -1,11 +1,11 @@
-﻿namespace AESharp
+﻿namespace AESharp.Evaluator
 {
     public class CircleData : DrawData
     {
-        public int centerX;
-        public int centerY;
+        public int CenterX;
+        public int CenterY;
 
-        public int radius;
+        public int Radius;
     }
 }
 

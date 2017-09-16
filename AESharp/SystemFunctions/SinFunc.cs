@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.UnaryOperators;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class SinFunc : SysFunc, IInvertable
     {
@@ -22,7 +24,7 @@ namespace AESharp
 
             if (res is Real)
             {
-                return new Irrational(Math.Sin((double) ((deg ? Constant.DegToRad.@decimal  : 1) * (res as Real)) )).Evaluate();
+                return new Irrational(Math.Sin((double) ((deg ? Constant.DegToRad.V : 1) * (res as Real)) )).Evaluate();
             }
 
             return new Error(this, "Could not take Sin of: " + args[0]);
@@ -43,7 +45,7 @@ namespace AESharp
         {
             var arg = new List();
             arg.Items.Add(other);
-            return SysFunc.MakeFunction(arg, CurScope, "asin");
+            return MakeFunction(arg, CurScope, "asin");
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace AESharp
+﻿using AESharp.Values;
+
+namespace AESharp.SystemFunctions
 {
     public class NRootFunc : SysFunc
     {

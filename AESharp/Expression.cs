@@ -1,4 +1,7 @@
 ﻿using System;
+using AESharp.Parser;
+using AESharp.Values;
+using Boolean = AESharp.Values.Boolean;
 
 namespace AESharp
 {
@@ -9,12 +12,12 @@ namespace AESharp
         public Expression Parent;
         public Pos Position;
 
-        Expression _reducedForm = null;
+        private Expression _reducedForm;
 
         public virtual Expression Value
         {
-            get { return this; }
-            set { throw new Exception("Cannot set value on " + this.GetType().Name); }
+            get => this;
+            set => throw new Exception("Cannot set value on " + GetType().Name);
         }
 
         public Expression ReduceEvaluate()
@@ -39,9 +42,7 @@ namespace AESharp
 
         public Expression ReduceCurrectOp()
         {
-            if (_reducedForm == null)
-                _reducedForm = Reduce().CurrectOperator();
-
+            _reducedForm = _reducedForm ?? Reduce().CurrectOperator();
             return _reducedForm;
         }
 
@@ -62,13 +63,15 @@ namespace AESharp
 
         public virtual bool CompareTo(Expression other)
         {
-            return this.GetType() == other.GetType();
+            return GetType() == other.GetType();
         }
 
         public virtual bool ContainsVariable(Variable other)
         {
             return false;
         }
+
+        public abstract bool Visit(IVisitor v);
 
         #region AddWith
         public virtual Expression AddWith(Integer other)
@@ -113,7 +116,7 @@ namespace AESharp
 
         public virtual Expression AddWith(Text other)
         {
-            return new Text(this.ToString() + other.Value);
+            return new Text(ToString() + other.Value);
         }
 
         public virtual Expression AddWith(Null other)

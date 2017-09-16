@@ -1,79 +1,79 @@
-﻿namespace AESharp
+﻿namespace AESharp.Parser
 {
     public enum TokenKind
     {
-        IDENTIFIER,
-        TRUE,
-        FALSE,
-        NULL,
-        SELF,
+        Identifier,
+        True,
+        False,
+        Null,
+        Self,
 
-        IF,
-        ELIF,
-        ELSE,
-        FOR,
-        IN,
-        WHILE,
-        RET,
-        IMPORT,
-        GLOBAL,
-        CLASS,
+        If,
+        Elif,
+        Else,
+        For,
+        In,
+        While,
+        Ret,
+        Import,
+        Global,
+        Class,
 
-        TEXT,
+        Text,
 
-        INTEGER,
-        DECIMAL,
-        IMAG_INT,
-        IMAG_DEC,
+        Integer,
+        Decimal,
+        ImagInt,
+        ImagDec,
 
-        TILDE,
-        ASSIGN,
-        EQUAL,
-        BOOL_EQUAL,
-        LESS_EQUAL,
-        GREAT_EQUAL,
-        NOT_EQUAL,
-        LESS,
-        GREAT,
-        ADD,
-        SUB,
-        MUL,
-        DIV,
-        MOD,
-        EXP,
-        NEG,
-        AND,
-        OR,
+        Tilde,
+        Assign,
+        Equal,
+        BoolEqual,
+        LessEqual,
+        GreatEqual,
+        NotEqual,
+        Less,
+        Great,
+        Add,
+        Sub,
+        Mul,
+        Div,
+        Mod,
+        Exp,
+        Neg,
+        And,
+        Or,
         
-        PARENT_START,
-        PARENT_END,
-        SQUARE_START,
-        SQUARE_END,
-        CURLY_START,
-        CURLY_END,
+        ParentStart,
+        ParentEnd,
+        SquareStart,
+        SquareEnd,
+        CurlyStart,
+        CurlyEnd,
 
-        COMMA,
-        COLON,
-        SEMICOLON,
-        DOT,
-        HASH,
+        Comma,
+        Colon,
+        Semicolon,
+        Dot,
+        Hash,
 
-        NEW_LINE,
-        END_OF_STRING,
-        NONE,
-        UNKNOWN
+        NewLine,
+        EndOfString,
+        None,
+        Unknown
     }
 
     public struct Pos
     {
-        public int i;
+        public int I;
 
         public int Line;
         public int Column;
 
         public Pos(int i = 0, int line = 1, int column = 0)
         {
-            this.i = i;
+            this.I = i;
             Line = line;
             Column = column;
         }
@@ -88,10 +88,10 @@
         public Token(TokenKind kind, char value, Pos pos) : this(kind, value.ToString(), pos) {}
         public Token(TokenKind kind, string value, Pos pos)
         {
-            this.Kind = kind;
-            this.Value = value;
-            this.Position = pos;
-            this.Position.i++;
+            Kind = kind;
+            Value = value;
+            Position = pos;
+            Position.I++;
         }
 
         public override string ToString()

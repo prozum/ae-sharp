@@ -1,17 +1,17 @@
-﻿namespace AESharp
+﻿namespace AESharp.Evaluator
 {
     public class DebugData : EvalData
     {
-        public string msg;
+        public string Msg;
 
         public DebugData(string msg)
         {
-            this.msg = msg;
+            this.Msg = msg;
         }
 
         public override string ToString()
         {
-            return msg;
+            return Msg;
         }
     }
 }

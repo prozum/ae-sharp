@@ -1,4 +1,4 @@
-﻿namespace AESharp
+﻿namespace AESharp.Values
 {
     public abstract class Number : Expression
     {

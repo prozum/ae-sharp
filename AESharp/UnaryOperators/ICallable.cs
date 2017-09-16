@@ -1,4 +1,6 @@
-﻿namespace AESharp
+﻿using AESharp.Values;
+
+namespace AESharp.UnaryOperators
 {
     public interface ICallable
     {

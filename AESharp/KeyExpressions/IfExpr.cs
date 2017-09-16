@@ -1,4 +1,7 @@
-﻿namespace AESharp
+﻿using AESharp.Evaluator;
+using AESharp.Values;
+
+namespace AESharp.KeyExpressions
 {
     public class IfExpr : Expression
     {
@@ -9,6 +12,8 @@
         { 
             CurScope = scope;
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {

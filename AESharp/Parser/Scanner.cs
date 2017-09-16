@@ -1,29 +1,29 @@
 ﻿using System.Collections.Generic;
 
-namespace AESharp
+namespace AESharp.Parser
 {
     public static class Scanner
     {
-        const char EOS = (char)0;
+        private const char Eos = (char)0;
 
-        static char[] Chars;
-        static Pos Position;
+        private static char[] _chars;
+        private static Pos _position;
 
-        static Error Error; 
+        private static Error _error; 
 
         public static char CharNext(bool eat = true)
         {
-            if (Position.i < Chars.Length)
+            if (_position.I < _chars.Length)
             {
                 if (eat)
                 {
-                    Position.Column++;
-                    return Chars[Position.i++];
+                    _position.Column++;
+                    return _chars[_position.I++];
                 }
-                return Chars[Position.i];
+                return _chars[_position.I];
             }
             else
-                return EOS;
+                return Eos;
         }
 
         public static Queue<Token> Tokenize(string tokenString, out Error error)
@@ -32,22 +32,22 @@ namespace AESharp
             error = null;
 
             var res = new Queue<Token> ();
-            Chars = tokenString.ToCharArray();
-            Position = new Pos();
+            _chars = tokenString.ToCharArray();
+            _position = new Pos();
 
             do
             {
                 tok = ScanNext();
 
-                if (Error != null)
+                if (_error != null)
                 {
-                    error = Error;
+                    error = _error;
                     return null;
                 }
 
                 res.Enqueue(tok);
             }
-            while (tok.Kind != TokenKind.END_OF_STRING);
+            while (tok.Kind != TokenKind.EndOfString);
 
             return res;
         }
@@ -60,13 +60,13 @@ namespace AESharp
 
             switch (@char)
             {
-                case EOS:
-                    return new Token(TokenKind.END_OF_STRING, "END_OF_STRING", Position);
+                case Eos:
+                    return new Token(TokenKind.EndOfString, "END_OF_STRING", _position);
                 
                 case '\n':
-                    Position.Line++;
-                    Position.Column = 0;
-                    return new Token(TokenKind.NEW_LINE, "NEW_LINE", Position);
+                    _position.Line++;
+                    _position.Column = 0;
+                    return new Token(TokenKind.NewLine, "NEW_LINE", _position);
 
                 case '0':
                 case '1':
@@ -85,99 +85,99 @@ namespace AESharp
                     return ScanText(@char);
                 
                 case '~':
-                    return new Token(TokenKind.TILDE, "~", Position);
+                    return new Token(TokenKind.Tilde, "~", _position);
                 case '+':
-                    return new Token(TokenKind.ADD, "+", Position);
+                    return new Token(TokenKind.Add, "+", _position);
                 case '-':
-                    return new Token(TokenKind.SUB, "-", Position);
+                    return new Token(TokenKind.Sub, "-", _position);
                 case '*':
-                    return new Token(TokenKind.MUL, "*", Position);
+                    return new Token(TokenKind.Mul, "*", _position);
                 case '/':
-                    return new Token(TokenKind.DIV, "/", Position);
+                    return new Token(TokenKind.Div, "/", _position);
                 case '%':
-                    return new Token(TokenKind.MOD, "%", Position);
+                    return new Token(TokenKind.Mod, "%", _position);
                 case '^':
-                    return new Token(TokenKind.EXP, "^", Position);
+                    return new Token(TokenKind.Exp, "^", _position);
                 case '&':
-                    return new Token(TokenKind.AND, "&", Position);
+                    return new Token(TokenKind.And, "&", _position);
                 case '|':
-                    return new Token(TokenKind.OR, "|", Position);
+                    return new Token(TokenKind.Or, "|", _position);
                 case '=':
                     if (CharNext(false) == '=')
                     {
                         CharNext(true);
-                        return new Token(TokenKind.BOOL_EQUAL, "==", Position);
+                        return new Token(TokenKind.BoolEqual, "==", _position);
                     }
                     else
-                        return new Token(TokenKind.EQUAL, "=", Position);
+                        return new Token(TokenKind.Equal, "=", _position);
                 case '<':
                     if (CharNext(false) == '=')
                     {
                         CharNext(true);
-                        return new Token(TokenKind.LESS_EQUAL, "<=", Position);
+                        return new Token(TokenKind.LessEqual, "<=", _position);
                     }
                     else
-                        return new Token(TokenKind.LESS, "<", Position);
+                        return new Token(TokenKind.Less, "<", _position);
                 case '>':
                     if (CharNext(false) == '=')
                     {
                         CharNext(true);
-                        return new Token(TokenKind.GREAT_EQUAL, ">=", Position);
+                        return new Token(TokenKind.GreatEqual, ">=", _position);
                     }
                     else
-                        return new Token(TokenKind.GREAT, ">", Position);
+                        return new Token(TokenKind.Great, ">", _position);
                 case ':':
                     if (CharNext(false) == '=')
                     {
                         CharNext(true);
-                        return new Token(TokenKind.ASSIGN, ":=", Position);
+                        return new Token(TokenKind.Assign, ":=", _position);
                     }
                     else
-                        return new Token(TokenKind.COLON, ":", Position);
+                        return new Token(TokenKind.Colon, ":", _position);
                 case '!':
                     if (CharNext(false) == '=')
                     {
                         CharNext(true);
-                        return new Token(TokenKind.NOT_EQUAL, "!=", Position);
+                        return new Token(TokenKind.NotEqual, "!=", _position);
                     }
                     else
-                        return new Token(TokenKind.NEG, "!", Position);
+                        return new Token(TokenKind.Neg, "!", _position);
 
                 case '(':
-                    return new Token(TokenKind.PARENT_START, "(", Position);
+                    return new Token(TokenKind.ParentStart, "(", _position);
                 case ')':
-                    return new Token(TokenKind.PARENT_END, ")", Position);
+                    return new Token(TokenKind.ParentEnd, ")", _position);
                 case '[':
-                    return new Token(TokenKind.SQUARE_START, "[", Position);
+                    return new Token(TokenKind.SquareStart, "[", _position);
                 case ']':
-                    return new Token(TokenKind.SQUARE_END, "]", Position);
+                    return new Token(TokenKind.SquareEnd, "]", _position);
                 case '{':
-                    return new Token(TokenKind.CURLY_START, "{", Position);
+                    return new Token(TokenKind.CurlyStart, "{", _position);
                 case '}':
-                    return new Token(TokenKind.CURLY_END, "}", Position);
+                    return new Token(TokenKind.CurlyEnd, "}", _position);
                 
                 case ',':
-                    return new Token(TokenKind.COMMA, ",", Position);
+                    return new Token(TokenKind.Comma, ",", _position);
                 case ';':
-                    return new Token(TokenKind.SEMICOLON, ";", Position);
+                    return new Token(TokenKind.Semicolon, ";", _position);
                 case '.':
-                    return new Token(TokenKind.DOT, ".", Position);
+                    return new Token(TokenKind.Dot, ".", _position);
                 case '#':
-                    return new Token(TokenKind.HASH, "#", Position);
+                    return new Token(TokenKind.Hash, "#", _position);
                 
                 default:
                     if (char.IsLetter(@char))
                         return ScanIdentifier(@char);
                     else
-                        return new Token(TokenKind.UNKNOWN, @char, Position);
+                        return new Token(TokenKind.Unknown, @char, _position);
             }
         }
 
         private static Token ScanNumber(char @char)
         {
-            TokenKind kind = TokenKind.INTEGER;
+            TokenKind kind = TokenKind.Integer;
             string number = @char.ToString();
-            Pos startPos = Position;
+            Pos startPos = _position;
 
 
             var cur = CharNext(false);
@@ -189,12 +189,12 @@ namespace AESharp
                 if (cur == '.')
                 {
                     //More than one Seperator. Error!
-                    if (kind == TokenKind.DECIMAL)
+                    if (kind == TokenKind.Decimal)
                     {
                         ReportError("Decimal with more than one seperator");
                         return null;
                     }
-                    kind = TokenKind.DECIMAL;
+                    kind = TokenKind.Decimal;
                 }
 
                 cur = CharNext(false);
@@ -202,7 +202,7 @@ namespace AESharp
 
             if (cur == 'i')
             {
-                kind = kind == TokenKind.INTEGER ? TokenKind.IMAG_INT : TokenKind.IMAG_DEC;
+                kind = kind == TokenKind.Integer ? TokenKind.ImagInt : TokenKind.ImagDec;
                 CharNext();
             }
 
@@ -231,7 +231,7 @@ namespace AESharp
                         else
                             res += subChar + ExtractSubText(cur) + subChar;
                         break;
-                    case EOS:
+                    case Eos:
                         ReportError("Missing end of string");
                         return "";
                     default:
@@ -244,14 +244,14 @@ namespace AESharp
 
         private static Token ScanText(char @char)
         {
-            var startPos = Position;
-            return new Token(TokenKind.TEXT, ExtractSubText(@char), startPos);
+            var startPos = _position;
+            return new Token(TokenKind.Text, ExtractSubText(@char), startPos);
         }
 
         private static Token ScanIdentifier(char @char)
         {
             string identifier = @char.ToString();
-            Pos startPos = Position;
+            Pos startPos = _position;
 
             var cur = CharNext(false);
             while (char.IsLetterOrDigit (cur))
@@ -266,39 +266,39 @@ namespace AESharp
             switch (identifier)
             {
                 case "true":
-                    return new Token(TokenKind.TRUE, identifier, startPos);
+                    return new Token(TokenKind.True, identifier, startPos);
                 case "false":
-                    return new Token(TokenKind.FALSE, identifier, startPos);
+                    return new Token(TokenKind.False, identifier, startPos);
                 case "null":
-                    return new Token(TokenKind.NULL, identifier, startPos);
+                    return new Token(TokenKind.Null, identifier, startPos);
                 case "if":
-                    return new Token(TokenKind.IF, identifier, startPos);
+                    return new Token(TokenKind.If, identifier, startPos);
                 case "elif":
-                    return new Token(TokenKind.ELIF, identifier, startPos);
+                    return new Token(TokenKind.Elif, identifier, startPos);
                 case "else":
-                    return new Token(TokenKind.ELSE, identifier, startPos);
+                    return new Token(TokenKind.Else, identifier, startPos);
                 case "for":
-                    return new Token(TokenKind.FOR, identifier, startPos);
+                    return new Token(TokenKind.For, identifier, startPos);
                 case "in":
-                    return new Token(TokenKind.IN, identifier, startPos);
+                    return new Token(TokenKind.In, identifier, startPos);
                 case "while":
-                    return new Token(TokenKind.WHILE, identifier, startPos);
+                    return new Token(TokenKind.While, identifier, startPos);
                 case "ret":
-                    return new Token(TokenKind.RET, identifier, startPos);
+                    return new Token(TokenKind.Ret, identifier, startPos);
                 case "import":
-                    return new Token(TokenKind.IMPORT, identifier, startPos);
+                    return new Token(TokenKind.Import, identifier, startPos);
                 case "global":
-                    return new Token(TokenKind.GLOBAL, identifier, startPos);
+                    return new Token(TokenKind.Global, identifier, startPos);
                 case "class":
-                    return new Token(TokenKind.CLASS, identifier, startPos);
+                    return new Token(TokenKind.Class, identifier, startPos);
                 case "and":
-                    return new Token(TokenKind.AND, identifier, startPos);
+                    return new Token(TokenKind.And, identifier, startPos);
                 case "or":
-                    return new Token(TokenKind.OR, identifier, startPos);
+                    return new Token(TokenKind.Or, identifier, startPos);
                 case "self":
-                    return new Token(TokenKind.SELF, identifier, startPos);
+                    return new Token(TokenKind.Self, identifier, startPos);
                 default:
-                    return new Token(TokenKind.IDENTIFIER, identifier, startPos);
+                    return new Token(TokenKind.Identifier, identifier, startPos);
             }
         }
 
@@ -313,8 +313,8 @@ namespace AESharp
         public static void ReportError(string msg)
         {
             var error = new Error("Scanner: " + msg);
-            error.Position = Position;
-            Error = error;
+            error.Position = _position;
+            _error = error;
         }
     }
 }

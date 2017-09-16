@@ -1,4 +1,6 @@
-﻿namespace AESharp
+﻿using AESharp.Values;
+
+namespace AESharp.BinaryOperators
 {
     // A Operator which evaluates two expressions.
     public abstract class BinaryOperator : Expression
@@ -8,7 +10,7 @@
 
         public override Scope CurScope
         {
-            get { return base.CurScope; }
+            get => base.CurScope;
             set
             {
                 base.CurScope = value;
@@ -23,10 +25,7 @@
         private Expression _left;
         public Expression Left
         {
-            get
-            {
-                return _left;
-            }
+            get => _left;
             set
             {
                 _left = value;
@@ -39,10 +38,7 @@
         private Expression _right;
         public Expression Right
         {
-            get
-            {
-                return _right;
-            }
+            get => _right;
             set
             {
                 _right = value;

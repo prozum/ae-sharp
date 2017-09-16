@@ -1,15 +1,19 @@
-﻿namespace AESharp
+﻿using AESharp.UnaryOperators;
+
+namespace AESharp.BinaryOperators
 {
     public class Assign : BinaryOperator
     {
-        public override string Identifier { get { return ":="; } }
-        public override int Priority { get{ return 0; } }
+        public override string Identifier => ":=";
+        public override int Priority => 0;
 
         public Assign() { }
         public Assign(Expression left, Expression right, Scope scope) : base(left, right) 
         {
             CurScope = scope;
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {

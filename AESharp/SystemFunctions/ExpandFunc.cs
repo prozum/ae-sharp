@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class ExpandFunc : SysFunc
     {

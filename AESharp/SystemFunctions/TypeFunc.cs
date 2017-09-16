@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class TypeFunc : SysFunc
     {
@@ -32,7 +33,7 @@ namespace AESharp
             {
                 if (other is Text)
                 {
-                    return ((eval as Text).@string.CompareTo((other as Text).@string) == 0) ? true : false;
+                    return ((eval as Text).String.CompareTo((other as Text).String) == 0) ? true : false;
                 }
                 if (other is TypeFunc)
                 {
@@ -40,7 +41,7 @@ namespace AESharp
 
                     if (text is Text)
                     {
-                        return ((eval as Text).@string.CompareTo((text as Text).@string) == 0) ? true : false;
+                        return ((eval as Text).String.CompareTo((text as Text).String) == 0) ? true : false;
                     }
                 }
             }

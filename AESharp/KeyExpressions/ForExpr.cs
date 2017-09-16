@@ -1,4 +1,6 @@
-﻿namespace AESharp
+﻿using AESharp.Values;
+
+namespace AESharp.KeyExpressions
 {
     public class ForExpr : Expression
     {
@@ -10,6 +12,8 @@
         { 
             CurScope = scope;
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {

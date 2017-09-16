@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.Evaluator;
+using AESharp.Values;
+using Boolean = AESharp.Values.Boolean;
 
 namespace AESharp
 {
@@ -20,22 +23,11 @@ namespace AESharp
 
         public override Scope CurScope
         {
-            get
-            {
-                return base.CurScope;
-            }
-            set
-            {
-                base.CurScope = value;
-
-//                foreach (var stmt in Expressions)
-//                {
-//                    stmt.CurScope = value;
-//                }
-            }
+            get => base.CurScope;
+            set => base.CurScope = value;
         }
 
-        readonly int MaxStatementPrint = 5;
+        private readonly int _maxStatementPrint = 5;
 
         public Scope()
         {
@@ -67,6 +59,8 @@ namespace AESharp
             }
         }
 
+        public override bool Visit(IVisitor v) => v.Visit(this);
+
         public override Expression Evaluate()
         {
             Expression res;
@@ -75,7 +69,7 @@ namespace AESharp
                 return Error;
 
             Returns.Items.Clear();
-            Return.@bool = false;
+            Return.Bool = false;
 
             foreach (var expr in Expressions)
             {
@@ -202,7 +196,7 @@ namespace AESharp
             if (Locals.TryGetValue(identifier, out expr))
             {
                 if (expr is Boolean)
-                    return (expr as Boolean).@bool;
+                    return (expr as Boolean).Bool;
             }
 
             if (CurScope != null)
@@ -236,7 +230,7 @@ namespace AESharp
                 
             for (int i = 0; i < Expressions.Count; i++) 
             {
-                if (i >= MaxStatementPrint)
+                if (i >= _maxStatementPrint)
                 {
                     str += "...";
                     break;

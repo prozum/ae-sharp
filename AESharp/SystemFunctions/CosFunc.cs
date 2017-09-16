@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AESharp.UnaryOperators;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class CosFunc : SysFunc, IInvertable
     {
@@ -28,10 +30,10 @@ namespace AESharp
             {
                 double value = res as Real;
 
-                if (value == (90 * (deg ? 1.0 : (double)Constant.DegToRad.@decimal)))
+                if (value == (90 * (deg ? 1.0 : (double)Constant.DegToRad.V)))
                     return Constant.Zero;
 
-                return new Irrational(Math.Cos((double)(deg ? Constant.DegToRad.@decimal : 1) * value)).Evaluate();
+                return new Irrational(Math.Cos((double)(deg ? Constant.DegToRad.V : 1) * value)).Evaluate();
             }
 
             return new Error(this, "Could not take Cos of: " + args[0]);
@@ -52,7 +54,7 @@ namespace AESharp
         {
             var arg = new List();
             arg.Items.Add(other);
-            return SysFunc.MakeFunction(arg, CurScope, "acos");
+            return MakeFunction(arg, CurScope, "acos");
         }
     }
 }

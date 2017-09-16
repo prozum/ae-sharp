@@ -1,24 +1,25 @@
 ﻿using System.Collections.Generic;
+using AESharp.UnaryOperators;
 
-namespace AESharp
+namespace AESharp.Values
 {
     public class List : Expression, ICallable
     {
         public List<Expression> Items;
 
-        const int MaxItemPrint = 10;
+        private const int MaxItemPrint = 10;
 
         public Expression this[int i]
         {
-            get { return Items[i]; }
-            set { Items[i] = value; }
+            get => Items[i];
+            set => Items[i] = value;
         }
 
-        public int Count { get { return Items.Count; }}
+        public int Count => Items.Count;
 
         public override Scope CurScope
         {
-            get { return base.CurScope; }
+            get => base.CurScope;
             set
             {
                 base.CurScope = value;
@@ -33,8 +34,10 @@ namespace AESharp
         public List() : this(new List<Expression> ()) {}
         public List(List<Expression> items)
         {
-            this.Items = items;
+            Items = items;
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override Expression Evaluate()
         {
@@ -74,7 +77,7 @@ namespace AESharp
 
         public Expression Call(List args)
         {
-            var @long = (args[0].Evaluate() as Integer).@int;
+            var @long = (args[0].Evaluate() as Integer).Int;
 
             if (@long < 0)
                 return new Error(this, "Cannot access with negative integer");

@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using AESharp.BinaryOperators;
+using AESharp.UnaryOperators;
+using AESharp.Values;
 
-namespace AESharp
+namespace AESharp.SystemFunctions
 {
     public class SolveFunc : SysFunc
     {
-        Equal equal;
-        Variable @var;
+        private Equal _equal;
+        private Variable _var;
 
         public SolveFunc() : this(null) { }
         public SolveFunc(Scope scope)
@@ -22,35 +25,35 @@ namespace AESharp
         {
             Equal solved;
 
-            equal = (Equal)args[0];
-            @var = (Variable)args[1];
+            _equal = (Equal)args[0];
+            _var = (Variable)args[1];
 
-            if (equal.Right.ContainsVariable(@var))
+            if (_equal.Right.ContainsVariable(_var))
             {
-                solved = new Equal(new Sub(equal.Left, equal.Right).Expand(), new Integer(0));
+                solved = new Equal(new Sub(_equal.Left, _equal.Right).Expand(), new Integer(0));
             }
             else
             {
-                solved = (equal.Expand() as Equal);
+                solved = (_equal.Expand() as Equal);
             }
 
-            while (!((solved.Left is Variable) && solved.Left.CompareTo(@var)))
+            while (!((solved.Left is Variable) && solved.Left.CompareTo(_var)))
             {
                 if (solved.Left is BinaryOperator && solved.Left is IInvertable)
                 {
                     solved = InvertOperator(solved.Left, solved.Right);
 
                     if (solved == null)
-                        return new Error(this, " could not solve " + @var.ToString());
+                        return new Error(this, " could not solve " + _var.ToString());
                 }
                 else if (solved.Left is Call && (solved.Left as Call).Child.Value is IInvertable)
                 {
                     solved = InvertFunction((solved.Left as Call), solved.Right);
 
                     if (solved == null)
-                        return new Error(this, " could not solve " + @var.ToString());
+                        return new Error(this, " could not solve " + _var.ToString());
                 }
-                else if (solved.Left is Variable && (solved.Left as Variable).Identifier == @var.Identifier)
+                else if (solved.Left is Variable && (solved.Left as Variable).Identifier == _var.Identifier)
                 {
                     var newLeft = (solved.Left as Variable).SeberateNumbers();
 
@@ -58,7 +61,7 @@ namespace AESharp
                 }
                 else
                 {
-                    return new Error(this, " could not solve " + @var.ToString());
+                    return new Error(this, " could not solve " + _var.ToString());
                 }
             }
 
@@ -69,11 +72,11 @@ namespace AESharp
         {
             BinaryOperator op = left as BinaryOperator;
 
-            if (op.Right.ContainsVariable(@var) && op.Left.ContainsVariable(@var))
+            if (op.Right.ContainsVariable(_var) && op.Left.ContainsVariable(_var))
             {
                 return BothSideSymbolSolver(left, right);
             }
-            else if (op.Left.ContainsVariable(@var))
+            else if (op.Left.ContainsVariable(_var))
             {
                 var inverted = (op as IInvertable).InvertOn(right);
 
@@ -82,7 +85,7 @@ namespace AESharp
 
                 return new Equal(op.Left, inverted);
             }
-            else if (op.Right.ContainsVariable(@var))
+            else if (op.Right.ContainsVariable(_var))
             {
                 if (op is ISwappable)
                 {
@@ -104,7 +107,7 @@ namespace AESharp
         {
             var leftSimplified = left.Reduce();
 
-            if (leftSimplified is BinaryOperator && ((leftSimplified as BinaryOperator).Left.ContainsVariable(@var) && (leftSimplified as BinaryOperator).Right.ContainsVariable(@var)))
+            if (leftSimplified is BinaryOperator && ((leftSimplified as BinaryOperator).Left.ContainsVariable(_var) && (leftSimplified as BinaryOperator).Right.ContainsVariable(_var)))
             {
                 return null;
             }
@@ -118,7 +121,7 @@ namespace AESharp
         {
             SysFunc func = call.Child.Value as SysFunc;
 
-            if (call.ContainsVariable(@var))
+            if (call.ContainsVariable(_var))
             {
                 return new Equal(call.Arguments[0], (func as IInvertable).InvertOn(right));
             }

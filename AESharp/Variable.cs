@@ -1,4 +1,8 @@
-﻿namespace AESharp
+﻿using AESharp.BinaryOperators;
+using AESharp.SystemFunctions;
+using AESharp.Values;
+
+namespace AESharp
 {
     public class Variable : Expression, INegative
     {
@@ -14,6 +18,8 @@
             Exponent = new Integer(1);
             Prefix = new Integer(1);
         }
+
+        public override bool Visit(IVisitor v) => v.Visit(this);
 
         public override string ToString()
         {
@@ -67,25 +73,13 @@
             return val.ReduceEvaluate();
         }
 
-        public bool IsDefined
-        {
-            get
-            {
-                return CurScope.IsDefined(Identifier);
-            }
-        }
+        public bool IsDefined => CurScope.IsDefined(Identifier);
 
         public override Expression Value
         {
-            get
-            {
-                return CurScope.GetVar(Identifier);
-            }
+            get => CurScope.GetVar(Identifier);
 
-            set
-            {
-                CurScope.SetVar(Identifier, value);
-            }
+            set => CurScope.SetVar(Identifier, value);
         }
 
         public override bool CompareTo(Expression other)
@@ -133,7 +127,7 @@
 
         public override bool ContainsVariable(Variable other)
         {
-            if (Identifier == other.Identifier && this.GetType() == other.GetType())
+            if (Identifier == other.Identifier && GetType() == other.GetType())
                 return true;
             else
                 return Value.ContainsVariable(other);

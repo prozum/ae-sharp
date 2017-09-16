@@ -1,17 +1,17 @@
-﻿namespace AESharp
+﻿namespace AESharp.Evaluator
 {
     public class PrintData : EvalData
     {
-        public string msg;
+        public string Msg;
 
         public PrintData(string msg)
         {
-            this.msg = msg;
+            this.Msg = msg;
         }
 
         public override string ToString()
         {
-            return msg;
+            return Msg;
         }
     }
 }
