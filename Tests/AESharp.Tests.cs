@@ -2,6 +2,7 @@
 using System.Threading;
 using AESharp;
 using AESharp.Evaluator;
+using AESharp.Parser;
 using AESharp.Values;
 using NUnit.Framework;
 using List = AESharp.Values.List;
@@ -102,7 +103,7 @@ namespace Ast.Tests
         #endregion
         public void Reduce(string expected, string inputString)
         {
-            var redString = "import math; reduce[" + inputString + "]";
+            var redString = "math.reduce[" + inputString + "]";
             var res = Evaluator.Eval(redString);
             Assert.AreEqual(expected, res.ToString());
         }
@@ -278,38 +279,33 @@ namespace Ast.Tests
         public void Evaluate(dynamic expected, string calculation)
         {
             var res = Evaluator.Eval("import math; import trig; " + calculation);
-            
-            if (res is Integer)
+
+            switch (res)
             {
-                Assert.AreEqual(expected, (res as Integer).Int);
-            }
-            else if (res is Rational)
-            {
-                Assert.AreEqual(expected, (res as Rational).Decimal);
-            }
-            else if (res is Irrational)
-            {
-                Assert.AreEqual(expected, (res as Irrational).Decimal);
-            }
-            else if (res is Boolean)
-            {
-                Assert.AreEqual(expected, (res as Boolean).Bool);
-            }
-            else if (res is Null)
-            {
-                Assert.AreEqual(expected, null);
-            }
-            else if (res is List)
-            {
-                Assert.AreEqual(expected, res.ToString());
-            }
-            else if (res is Error)
-            {
-                Assert.Fail(res.ToString());
-            }
-            else
-            {
-                Assert.Fail(res.GetType().ToString());
+                case Integer _int:
+                    Assert.AreEqual(expected, _int.Int);
+                    break;
+                case Rational rat:
+                    Assert.AreEqual(expected, rat.Decimal);
+                    break;
+                case Irrational irr:
+                    Assert.AreEqual(expected, irr.Decimal);
+                    break;
+                case Boolean boo:
+                    Assert.AreEqual(expected, boo.Bool);
+                    break;
+                case Null nul:
+                    Assert.AreEqual(expected, null);
+                    break;
+                case List lis:
+                    Assert.AreEqual(expected, lis.ToString());
+                    break;
+                case Error err:
+                    Assert.Fail(err.ToString());
+                    break;
+                default:
+                    Assert.Fail(res.GetType().ToString());
+                    break;
             }
         }
 
@@ -334,20 +330,20 @@ namespace Ast.Tests
             Assert.AreEqual(expected, Evaluator.Eval(testString).ToString());
         }
 
-        [Test]
-        public void TheNotSoHardExpressionToParse()
+        [TestCase("x:=x&x!=x+x/x^x.x*x")]
+        [TestCase("1+2/3^4*5")]
+        public void ComplexParsing(string str)
         {
-            var expected = "1+2/3^4*5";
-            var actual = Evaluator.Eval("~(" + expected + ")").ToString();
-            Assert.AreEqual(expected, actual);
+            var parser = new Parser();
+            var result = ((Scope) parser.Parse(str)).Expressions[0].ToString();
+            Assert.AreEqual(str, result);
         }
 
-        [Test]
-        public void TheHardExpressionToParse()
+        [TestCase("a := { func[] := { ret { a := 0 } } } ret a.func[].a == 0")]
+        public void FeaturesThatShouldNotError(string str)
         {
-            var expected = "x:=x&x!=x+x/x^x.x*x";
-            var actual = Evaluator.Eval("~(" + expected + ")").ToString();
-            Assert.AreEqual(expected, actual);
+            Assert.IsFalse(Evaluator.Eval(str) is Error); 
         }
+        
     }
 }

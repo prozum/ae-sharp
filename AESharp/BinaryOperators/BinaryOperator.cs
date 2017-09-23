@@ -104,11 +104,12 @@ namespace AESharp.BinaryOperators
 
         private bool CompareSwappables(ISwappable exp1, BinaryOperator exp2)
         {
-            if ((exp1 as BinaryOperator).Left is ISwappable || (exp1 as BinaryOperator).Right is ISwappable)
+            var binExp1 = (BinaryOperator) exp1;
+            if (binExp1.Left is ISwappable || binExp1.Right is ISwappable)
             {
                 return SwappableCompareAlgorithem(exp1, exp2);
             }
-            else if (CompareSides(exp1 as BinaryOperator, exp2) || CompareSides(exp1.Swap().Reduce() as BinaryOperator, exp2))
+            else if (CompareSides(binExp1, exp2) || CompareSides((BinaryOperator) exp1.Swap().Reduce(), exp2))
             {
                 return true;
             }
@@ -116,9 +117,9 @@ namespace AESharp.BinaryOperators
             return false;
         }
 
-        private bool SwappableCompareAlgorithem(ISwappable exp1, BinaryOperator exp2)
+        private static bool SwappableCompareAlgorithem(ISwappable exp1, BinaryOperator exp2)
         {
-            BinaryOperator modified = (exp1 as BinaryOperator).Clone() as BinaryOperator;
+            var modified = (BinaryOperator)((BinaryOperator) exp1).Clone();
 
             if (modified.ToStringParent() == exp2.ToStringParent())
             {
